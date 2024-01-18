@@ -1,0 +1,82 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Usuario {
+  id        Int        @id @default(autoincrement())
+  username  String
+  senha     String
+  role      String // "professor"
+  Professor Professor?
+
+  createdAt DateTime @default(now())
+}
+
+model Professor {
+  id          Int                   @id @default(autoincrement())
+  nome        String
+  disciplinas DisciplinaProfessor[]
+  turmas      TurmaProfessor[]
+  usuario     Usuario               @relation(fields: [usuarioId], references: [id])
+  usuarioId   Int                   @unique
+  createdAt   DateTime              @default(now())
+}
+
+model Disciplina {
+  id          Int                   @id @default(autoincrement())
+  nome        String
+  professores DisciplinaProfessor[]
+}
+
+model DisciplinaProfessor {
+  disciplinaId Int        @map("disciplina_id")
+  professorId  Int        @map("professor_id")
+  disciplina   Disciplina @relation(fields: [disciplinaId], references: [id])
+  professor    Professor  @relation(fields: [professorId], references: [id])
+
+  @@id([disciplinaId, professorId])
+}
+
+model Turma {
+  id          Int              @id @default(autoincrement())
+  nome        String
+  turno       String // "Matutino" ou "Vespertino"
+  data        DateTime
+  professores TurmaProfessor[]
+  alunos      Aluno[]
+}
+
+model TurmaProfessor {
+  turmaId     Int
+  professorId Int
+  turma       Turma     @relation(fields: [turmaId], references: [id])
+  professor   Professor @relation(fields: [professorId], references: [id])
+
+  @@id([turmaId, professorId])
+}
+
+model Aluno {
+  id        Int    @id @default(autoincrement())
+  nome      String
+  matricula String
+  turmaId   Int
+  turma     Turma  @relation(fields: [turmaId], references: [id])
+  notas     Nota[]
+}
+
+model Nota {
+  id          Int    @id @default(autoincrement())
+  unidade     Int // Número da unidade (1, 2, 3)
+  valor       Float
+  recuperacao Float?
+  alunoId     Int
+  aluno       Aluno  @relation(fields: [alunoId], references: [id])
+}
