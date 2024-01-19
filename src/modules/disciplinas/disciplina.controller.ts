@@ -1,4 +1,5 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '../auth-guard/auth.guard';
 import { DisciplinaService } from './disciplina.service';
 import { CreateDisciplinaDto } from './dto/create-disciplina.dto';
 
@@ -11,6 +12,7 @@ export class DisciplinaController {
   }
 
   @Get('disciplinas')
+  @UseGuards(AuthGuard)
   async findAll() {
     const todos = await this.disciplinaService.findAll();
     return todos;

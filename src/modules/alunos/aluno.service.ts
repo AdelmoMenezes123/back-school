@@ -17,11 +17,11 @@ export class AlunosService {
       throw new Error(`Aluno com a matricula: ${data.matricula} ja existe!`);
     }
 
-    const disciplina = await this.prisma.disciplina.create({ data });
-    return disciplina;
+    const aluno = await this.prisma.aluno.create({ data });
+    return aluno;
   }
 
   async findAll() {
-    return this.prisma.disciplina.findMany();
+    return this.prisma.aluno.findMany();
   }
 }
